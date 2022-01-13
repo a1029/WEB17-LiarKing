@@ -1,0 +1,44 @@
+name: Front CI/CD
+
+on:
+  push:
+    branches: [release]
+
+env:
+  front-directory: ./front-end
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: 'npm'
+
+      - name: Install dependencies
+        working-directory: ${{env.front-directory}}
+        run: npm i
+
+      - name: Create .env
+        working-directory: ${{env.front-directory}}
+        run: |
+          touch .env
+          echo REACT_APP_SOCKET_HOST=${{ secrets.REACT_APP_SOCKET_HOST }}\ >> .env
+          echo REACT_APP_PEER_HOST=${{ secrets.REACT_APP_PEER_HOST }}\ >> .env
+          echo NODE_ENV=${{ secrets.NODE_ENV }}\ >> .env
+
+      - name: Build React Project
+        working-directory: ${{env.front-directory}}
+        run: npm run build
+
+      - name: Make zip file
+        run: zip -r ./liarking-front-build.zip ./front-end/build
+
+      - name: Upload to S3
+        run: aws s3 cp --region ap-northeast-2 --acl private ./liarking-front-build.zip s3://liarking-front-build

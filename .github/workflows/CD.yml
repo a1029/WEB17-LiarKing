@@ -2,11 +2,10 @@ name: Node.js CD
 
 on:
   push:
-    branches: [ release ]
+    branches: [none]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:

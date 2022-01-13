@@ -2,7 +2,7 @@ name: Server CI
 
 on:
   pull_request:
-    branches: [dev]
+    branches: [none]
 
 env:
   directory-server: ./back-end
