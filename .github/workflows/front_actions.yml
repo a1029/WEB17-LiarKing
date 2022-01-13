@@ -45,6 +45,9 @@ jobs:
       - name: Copy appspec
         run: cp appspec.yml ./deploy
 
+      - name: Copy Script
+        run: cp ./scripts/*.sh ./deploy
+
       - name: Copy build
         run: cp -r ./front-end/build/* ./deploy/build
 
