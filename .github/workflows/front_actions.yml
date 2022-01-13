@@ -8,7 +8,7 @@ env:
   front-directory: ./front-end
 
 jobs:
-  CI:
+  CICD:
     runs-on: ubuntu-latest
 
     steps:
@@ -49,3 +49,15 @@ jobs:
 
       - name: Upload to S3
         run: aws s3 cp --region ap-northeast-2 --acl private ./liarking-front-build.zip s3://liarking-front-build
+
+      - name: Deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
+        run: |
+          aws deploy create-deployment \
+          --application-name liarking \
+          --deployment-group-name liarking-group \
+          --file-exists-behavior OVERWRITE \
+          --s3-location bucket=liarking-front-build,bundleType=zip,key=liarking-front-build.zip
+          --region ap-northeast-2
