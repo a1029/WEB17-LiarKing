@@ -1,4 +1,4 @@
-name: Front CI/CD
+name: LiarKing-Front
 
 on:
   push:
@@ -8,7 +8,7 @@ env:
   front-directory: ./front-end
 
 jobs:
-  CICD:
+  CI/CD:
     runs-on: ubuntu-latest
 
     steps:
@@ -37,8 +37,19 @@ jobs:
         working-directory: ${{env.front-directory}}
         run: CI= npm run build
 
+      - name: Make directory
+        run: |
+          mkdir -p deploy
+          mkdir ./deploy/build
+
+      - name: Copy appspec
+        run: cp appspec.yml ./deploy
+
+      - name: Copy build
+        run: cp -r ./front-end/build/* ./deploy
+
       - name: Make zip file
-        run: zip -r ./liarking-front-build.zip ./front-end/build
+        run: zip -r ./liarking-front-build.zip ./deploy
 
       - name: S3 authentication configure
         uses: aws-actions/configure-aws-credentials@v1
