@@ -8,7 +8,7 @@ env:
   front-directory: ./front-end
 
 jobs:
-  CI/CD:
+  CICD:
     runs-on: ubuntu-latest
 
     steps:
