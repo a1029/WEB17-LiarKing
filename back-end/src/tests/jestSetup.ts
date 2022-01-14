@@ -1,5 +1,5 @@
 import connection from '../database/connection';
-import server from '../';
+import server from '..';
 
 beforeAll(async () => {
   await connection.create();
