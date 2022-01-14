@@ -1,56 +1,39 @@
 import express from 'express';
-import morgan from 'morgan';
-import session from 'express-session';
 import dotenv from 'dotenv';
 import 'reflect-metadata';
-import path from 'path';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import socketUtil from './utils/socket';
 import connection from './database/connection';
-import { ExpressPeerServer } from 'peer';
-import userRouter from './route/userRouter';
-import indexRouter from './route/indexRouter';
+import loaders from './loaders';
 
 dotenv.config();
 
-const app = express();
-const httpServer = createServer(app);
-const io = new Server({
-  cors: { origin: '*' },
-  path: '/socket',
-  transports: ['websocket'],
-});
-if (process.env.NODE_ENV !== 'test') io.listen(Number(process.env.SOCKET_PORT));
+async function startServer(app, httpServer) {
+  loaders.init(app, httpServer);
 
-socketUtil(io);
-
-if (process.env.NODE_ENV !== 'test') app.use('/peerjs', ExpressPeerServer(httpServer));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(morgan('dev'));
-app.use(
-  session({
-    resave: false,
-    saveUninitialized: true,
-    secret: process.env.COOKIE_SECRET,
-    cookie: {
-      httpOnly: true,
-      secure: false,
-    },
-  })
-);
-app.use('/api/users', userRouter);
-app.use('/api', indexRouter);
-app.use(express.static(path.join(__dirname, '../build')));
-
-if (process.env.NODE_ENV !== 'test') {
-  connection.create().then(() => {
+  if (process.env.NODE_ENV !== 'test') {
+    await connection.create();
     console.log('database connected');
-    httpServer.listen(Number(process.env.EXPRESS_PORT), () => {
-      console.log('server start');
-    });
+  }
+
+  httpServer.listen(Number(process.env.EXPRESS_PORT), () => {
+    console.log('server start');
   });
+
+  if (process.env.NODE_ENV !== 'test') {
+    const io = new Server({
+      cors: { origin: '*' },
+      path: '/socket',
+      transports: ['websocket'],
+    });
+    io.listen(Number(process.env.SOCKET_PORT));
+    socketUtil(io);
+  }
 }
 
-export default app;
+const app = express();
+const httpServer = createServer(app);
+startServer(app, httpServer);
+
+export default { app, httpServer };

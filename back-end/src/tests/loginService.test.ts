@@ -1,17 +1,21 @@
+import { getRepository } from 'typeorm';
+import { User } from '../database/entity/User';
 import loginService from '../database/service/loginService';
 
-describe('loginVerify test', () => {
-  test('success (correct id and password)', async () => {
-    const id: string = 'testid1';
-    const password: string = 'testpw1';
+describe('loginVerify', () => {
+  test('성공', async () => {
+    const id: string = 'id';
+    const password: string = 'pw';
+    getRepository(User).findOne = jest.fn().mockResolvedValue({ user_id: id, password, point: 100 });
     const response = await loginService.loginVerify(id, password);
 
-    expect(response).toBeTruthy();
+    expect(response).toEqual({ user_id: id, point: 100, rank: 'Silver' });
   });
 
-  test('fail (incorrect id and password)', async () => {
-    const id: string = 'testid11111111';
-    const password: string = 'testpw1';
+  test('실패 (올바르지 않는 아이디 또는 비밀번호)', async () => {
+    const id: string = 'id';
+    const password: string = 'pw';
+    getRepository(User).findOne = jest.fn().mockResolvedValue({ user_id: id, password: 'wrong', point: 100 });
     const response = await loginService.loginVerify(id, password);
 
     expect(response).toBeFalsy();

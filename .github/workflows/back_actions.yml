@@ -1,0 +1,41 @@
+name: LiarKing-Back
+
+on:
+  push:
+    branches: [none]
+
+jobs:
+  CICD:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          cd back-end
+          npm i
+
+      - name: Create .env
+        run: |
+          cd back-end
+          touch .env
+          echo COOKIE_SECRET=${{ secrets.COOKIE_SECRET }}\ >> .env
+          echo TYPEORM_HOST=${{ secrets.TYPEORM_HOST }}\ >> .env
+          echo TYPEORM_PORT=${{ secrets.TYPEORM_PORT }}\ >> .env
+          echo TYPEORM_USERNAME=${{ secrets.TYPEORM_USERNAME }}\ >> .env
+          echo TYPEORM_PASSWORD=${{ secrets.TYPEORM_PASSWORD }}\ >> .env
+          echo TYPEORM_DATABASE=${{ secrets.TYPEORM_DATABASE }}\ >> .env
+          echo EXPRESS_PORT=${{ secrets.EXPRESS_PORT }}\ >> .env
+          echo SOCKET_PORT=${{ secrets.SOCKET_PORT }}\ >> .env
+          echo PEER_PORT=${{ secrets.PEER_PORT }}\ >> .env
+
+      - name: Build Server
+        run: CI= npm run build

@@ -32,7 +32,7 @@ indexRouter.post('/non-login', async (req: Request, res: Response, next: NextFun
     const nickname = req.body.nickname;
     const result = await userService.getUserInfo(nickname);
 
-    if (nicknameList.filter((_nickname) => _nickname === nickname).length === 0 && !result && !result) {
+    if (nicknameList.filter((_nickname) => _nickname === nickname).length === 0 && !result) {
       req.session['nickname'] = nickname;
       nicknameList.push(nickname);
       res.json({ state: 'success' });

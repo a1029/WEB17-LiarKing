@@ -2,7 +2,7 @@ name: LiarKing-Front
 
 on:
   push:
-    branches: [release]
+    branches: [none]
 
 env:
   front-directory: ./front-end

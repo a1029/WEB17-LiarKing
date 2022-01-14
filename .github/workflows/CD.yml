@@ -1,4 +1,4 @@
-name: Node.js CD
+name: CD
 
 on:
   push:
@@ -11,10 +11,9 @@ jobs:
     strategy:
       matrix:
         node-version: [14.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-      - name: executing remote ssh commands using password
+      - name: Deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}

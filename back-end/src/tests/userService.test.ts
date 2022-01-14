@@ -2,29 +2,52 @@ import { getRepository } from 'typeorm';
 import { User } from '../database/entity/User';
 import userService from '../database/service/userService';
 
-describe('getUsersRanks test', () => {
-  test('success (get top 5 users)', async () => {
-    const ranks = await userService.getUsersRanks();
-    expect(ranks).toHaveLength(5);
+describe('getUsersRanks', () => {
+  test('성공', async () => {
+    getRepository(User).query = jest.fn().mockResolvedValue([1, 2, 3, 4, 5]);
+    const result = await userService.getUsersRanks();
+    expect(result).toHaveLength(5);
   });
 });
 
-describe('signUpUser test', () => {
-  test('success (sign up)', async () => {
-    const user = await userService.signUpUser('signupid1', 'signuppw1');
-    await getRepository(User).delete({ user_id: 'signupid1' });
-    expect(user).toBeTruthy();
+describe('signUpUser', () => {
+  test('성공', async () => {
+    getRepository(User).findOne = jest.fn().mockResolvedValue(false);
+    const id = 'id';
+    const pw = 'pw';
+    const user: User = new User();
+    user.user_id = id;
+    user.password = pw;
+    getRepository(User).save = jest.fn().mockResolvedValue(user);
+    const result = await userService.signUpUser(id, pw);
+
+    expect(result).toEqual({ user_id: id, point: 0, rank: 'Bronze' });
   });
 
-  test('fail (sign up)', async () => {
-    const user = await userService.signUpUser('testid1', 'testpw1');
-    expect(user).toBeFalsy();
+  test('실패 (이미 존재하는 아이디)', async () => {
+    getRepository(User).findOne = jest.fn().mockResolvedValue(true);
+    const result = await userService.signUpUser('id', 'pw');
+    expect(result).toBeFalsy();
   });
 });
 
 describe('getUserInfo', () => {
-  test('success (get user Info)', async () => {
-    const user = await userService.getUserInfo('asdfasdf');
-    expect(user).toBeTruthy();
+  test('성공', async () => {
+    const id = 'id';
+    const user: User = new User();
+    user.user_id = id;
+    getRepository(User).findOne = jest.fn().mockResolvedValue(user);
+    delete user.password;
+    const result = await userService.getUserInfo(id);
+
+    expect(result).toEqual(user);
+  });
+
+  test('실패 (존재하지 않는 아이디)', async () => {
+    const id = 'id';
+    getRepository(User).findOne = jest.fn().mockResolvedValue(undefined);
+    const result = await userService.getUserInfo(id);
+
+    expect(result).toEqual(undefined);
   });
 });
