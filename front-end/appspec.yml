@@ -13,6 +13,6 @@ permissions:
 
 hooks:
   AfterInstall:
-    - location: deploy_front.sh
+    - location: front_deploy.sh
       timeout: 60
       runas: ec2-user

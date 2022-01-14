@@ -7,7 +7,7 @@ import React from 'react';
 const Main = () => {
   return (
     <div id="main">
-      <div className="main-header">Liar Game 2</div>
+      <div className="main-header">Liar Game 1.1</div>
       <div className="main-center">
         <div id="main-character-left" />
         <div className="main-buttons">

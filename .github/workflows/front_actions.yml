@@ -39,20 +39,20 @@ jobs:
 
       - name: Make directory
         run: |
-          mkdir -p deploy
-          mkdir ./deploy/build
+          mkdir -p front-deploy
+          mkdir ./front-deploy/build
 
       - name: Copy appspec
-        run: cp appspec.yml ./deploy
+        run: cp ./front-end/appspec.yml ./front-deploy
 
       - name: Copy Script
-        run: cp ./scripts/*.sh ./deploy
+        run: cp ./front-end/scripts/*.sh ./front-deploy
 
       - name: Copy build
-        run: cp -r ./front-end/build/* ./deploy/build
+        run: cp -r ./front-end/build/* ./front-deploy/build
 
       - name: Make zip file
-        run: zip -r ./liarking-front-build.zip ./deploy
+        run: zip -r ./liarking-front-build.zip ./front-deploy
 
       - name: S3 authentication configure
         uses: aws-actions/configure-aws-credentials@v1
