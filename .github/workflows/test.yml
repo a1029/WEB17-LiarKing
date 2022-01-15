@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: [release]
 
+env:
+  back_repo: ./back-end
+  front_repo: ./front-end
+
 jobs:
   Test:
     runs-on: ubuntu-latest
@@ -19,11 +23,11 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: |
-          cd back-end
-          npm i
+        working-directory: ${{ env.back_repo }}
+        run: npm i
 
       - name: Create .env
+        working-directory: ${{ env.back_repo }}
         run: |
           touch .env
           echo COOKIE_SECRET=${{ secrets.COOKIE_SECRET }}\ >> .env
@@ -35,12 +39,13 @@ jobs:
           echo EXPRESS_PORT=${{ secrets.EXPRESS_PORT }}\ >> .env
 
       - name: Unit Test
+        working-directory: ${{ env.back_repo }}
         run: npm run test
 
       - name: Install dependencies
-        run: |
-          cd ../front-end
-          npm i
+        working-directory: ${{ env.front_repo }}
+        run: npm i
 
       - name: Build Test
+        working-directory: ${{ env.front_repo }}
         run: CI= npm run build
