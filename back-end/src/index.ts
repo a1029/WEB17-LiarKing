@@ -1,7 +1,7 @@
-import express from 'express';
+import express, { Application } from 'express';
 import dotenv from 'dotenv';
 import 'reflect-metadata';
-import { createServer } from 'http';
+import { createServer, Server as ServerType } from 'http';
 import { Server } from 'socket.io';
 import socketUtil from './utils/socket';
 import connection from './database/connection';
@@ -9,17 +9,14 @@ import loaders from './loaders';
 
 dotenv.config();
 
-async function startServer(app, httpServer) {
+async function startServer(app: Application, httpServer: ServerType) {
   loaders.init(app, httpServer);
 
   if (process.env.NODE_ENV !== 'test') {
     await connection.create();
-    console.log('database connected');
   }
 
-  httpServer.listen(Number(process.env.EXPRESS_PORT), () => {
-    console.log('server start');
-  });
+  httpServer.listen(Number(process.env.EXPRESS_PORT));
 
   if (process.env.NODE_ENV !== 'test') {
     const io = new Server({
