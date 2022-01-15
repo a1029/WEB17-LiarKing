@@ -1,11 +1,11 @@
-name: CD
+name: LiarKing
 
 on:
   push:
     branches: [none]
 
 jobs:
-  build:
+  CICD:
     runs-on: ubuntu-latest
 
     strategy:
