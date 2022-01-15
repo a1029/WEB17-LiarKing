@@ -22,7 +22,7 @@ jobs:
           node-version: '14'
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: Install back dependencies
         working-directory: ${{ env.back_repo }}
         run: npm i
 
@@ -42,7 +42,7 @@ jobs:
         working-directory: ${{ env.back_repo }}
         run: npm run test
 
-      - name: Install dependencies
+      - name: Install front dependencies
         working-directory: ${{ env.front_repo }}
         run: npm i
 
