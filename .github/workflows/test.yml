@@ -40,7 +40,6 @@ jobs:
         run: |
           mysql --version
           sudo service mysql start
-          mysql -uroot -proot -e "SHOW DATABASES"
           mysql -uroot -proot -e "CREATE DATABASE test"
 
       - name: Unit Test
