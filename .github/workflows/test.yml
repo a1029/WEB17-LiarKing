@@ -32,6 +32,19 @@ jobs:
           node-version: '14'
           cache: 'npm'
 
+      - name: Cache back node_modules
+        working-directory: ${{ env.back_repo }}
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-back-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-back-${{ env.cache-name }}-
+            ${{ runner.os }}-back-
+            ${{ runner.os }}-
+
       - name: Install back dependencies
         working-directory: ${{ env.back_repo }}
         run: npm i
