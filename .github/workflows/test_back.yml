@@ -6,7 +6,6 @@ on:
 
 env:
   back_repo: ./back-end
-  front_repo: ./front-end
 
 jobs:
   Test:
@@ -32,7 +31,7 @@ jobs:
           node-version: '14'
           cache: 'npm'
 
-      - name: Cache back node_modules
+      - name: Cache node_modules
         uses: actions/cache@v2
         env:
           cache-name: cache-node-modules
@@ -42,9 +41,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-back-${{ env.cache-name }}-
             ${{ runner.os }}-back-
-            ${{ runner.os }}-
 
-      - name: Install back dependencies
+      - name: Install dependencies
         working-directory: ${{ env.back_repo }}
         run: npm i
 
@@ -65,11 +63,3 @@ jobs:
           TYPEORM_PASSWORD: root
           TYPEORM_DATABASE: test
           EXPRESS_PORT: ${{ secrets.EXPRESS_PORT }}
-
-      - name: Install front dependencies
-        working-directory: ${{ env.front_repo }}
-        run: npm i
-
-      - name: Build Test
-        working-directory: ${{ env.front_repo }}
-        run: CI= npm run build

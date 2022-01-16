@@ -1,0 +1,32 @@
+name: LiarKing
+
+on:
+  pull_request:
+    branches: [release]
+
+env:
+  front_repo: ./front-end
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-front-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-front-${{ env.cache-name }}-
+            ${{ runner.os }}-front-
+
+      - name: Install dependencies
+        working-directory: ${{ env.front_repo }}
+        run: npm i
+
+      - name: Build Test
+        working-directory: ${{ env.front_repo }}
+        run: CI= npm run build
