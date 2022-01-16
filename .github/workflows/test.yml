@@ -11,6 +11,16 @@ env:
 jobs:
   Test:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0.27
+        env:
+          MYSQL_USER: test
+          MYSQL_PASSWORD: test
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test
+        ports:
+          - 3306
 
     steps:
       - name: Checkout
