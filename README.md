@@ -36,4 +36,4 @@
 
 ### 🧱 Architecture
 
-<img src="https://user-images.githubusercontent.com/15135565/144010661-c96b4043-23e2-47d4-82aa-e431a95ec78c.PNG" width="1000px">
+<img src="https://user-images.githubusercontent.com/15135565/149805130-df628956-e02c-4347-834e-ee4178d44842.png" width="1000px">
