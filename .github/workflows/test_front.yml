@@ -22,6 +22,7 @@ jobs:
           cache: 'npm'
 
       - name: Cache node_modules
+        id: front-cache
         uses: actions/cache@v2
         env:
           cache-name: cache-node-modules
@@ -34,6 +35,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ${{ env.front_repo }}
+        if: steps.front-cache.outputs.cache-hit != 'true'
         run: npm i
 
       - name: Build Test

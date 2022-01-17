@@ -32,6 +32,7 @@ jobs:
           cache: 'npm'
 
       - name: Cache node_modules
+        id: back-cache
         uses: actions/cache@v2
         env:
           cache-name: cache-node-modules
@@ -44,6 +45,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ${{ env.back_repo }}
+        if: steps.back-cache.outputs.cache-hit != 'true'
         run: npm i
 
       - name: Install MySQL
