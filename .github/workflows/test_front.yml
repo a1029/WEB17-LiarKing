@@ -27,8 +27,8 @@ jobs:
         env:
           cache-name: cache-node-modules
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-front-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          path: ~/.npm-front
+          key: ${{ runner.os }}-front-${{ env.cache-name }}-${{ hashFiles('**/front-end/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-front-${{ env.cache-name }}-
             ${{ runner.os }}-front-
