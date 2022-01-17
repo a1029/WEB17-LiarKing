@@ -1,4 +1,4 @@
-name: LiarKing
+name: LiarKing-Front
 
 on:
   pull_request:
