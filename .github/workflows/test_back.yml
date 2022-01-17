@@ -31,21 +31,8 @@ jobs:
           node-version: '14'
           cache: 'npm'
 
-      - name: Cache node_modules
-        id: back-cache
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ~/.npm-back
-          key: ${{ runner.os }}-back-${{ env.cache-name }}-${{ hashFiles('**/back-end/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-back-${{ env.cache-name }}-
-            ${{ runner.os }}-back-
-
       - name: Install dependencies
         working-directory: ${{ env.back_repo }}
-        if: steps.back-cache.outputs.cache-hit != 'true'
         run: npm i
 
       - name: Install MySQL
