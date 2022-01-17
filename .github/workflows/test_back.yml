@@ -1,4 +1,4 @@
-name: LiarKing
+name: LiarKing-Back
 
 on:
   pull_request:
@@ -30,17 +30,6 @@ jobs:
         with:
           node-version: '14'
           cache: 'npm'
-
-      - name: Cache node_modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-back-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-back-${{ env.cache-name }}-
-            ${{ runner.os }}-back-
 
       - name: Install dependencies
         working-directory: ${{ env.back_repo }}

@@ -1,4 +1,4 @@
-name: LiarKing
+name: LiarKing-Front
 
 on:
   pull_request:
@@ -12,16 +12,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Cache node_modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install node
+        uses: actions/setup-node@v2
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-front-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-front-${{ env.cache-name }}-
-            ${{ runner.os }}-front-
+          node-version: '14'
+          cache: 'npm'
 
       - name: Install dependencies
         working-directory: ${{ env.front_repo }}
