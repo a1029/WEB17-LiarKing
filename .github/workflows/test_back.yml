@@ -1,0 +1,65 @@
+name: LiarKing
+
+on:
+  pull_request:
+    branches: [release]
+
+env:
+  back_repo: ./back-end
+
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0.26
+        env:
+          MYSQL_USER: test
+          MYSQL_PASSWORD: test
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test
+        ports:
+          - 3306
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: 'npm'
+
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-back-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-back-${{ env.cache-name }}-
+            ${{ runner.os }}-back-
+
+      - name: Install dependencies
+        working-directory: ${{ env.back_repo }}
+        run: npm i
+
+      - name: Install MySQL
+        run: |
+          mysql --version
+          sudo service mysql start
+          mysql -uroot -proot -e "CREATE DATABASE test"
+
+      - name: Unit Test
+        working-directory: ${{ env.back_repo }}
+        run: npm run test
+        env:
+          COOKIE_SECRET: test
+          TYPEORM_HOST: localhost
+          TYPEORM_PORT: 3306
+          TYPEORM_USERNAME: root
+          TYPEORM_PASSWORD: root
+          TYPEORM_DATABASE: test
+          EXPRESS_PORT: ${{ secrets.EXPRESS_PORT }}
