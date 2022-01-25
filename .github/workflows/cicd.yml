@@ -4,24 +4,78 @@ on:
   push:
     branches: [release]
 
+env:
+  back: ./back-end
+  front: ./front-end
+
 jobs:
   CICD:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [14.x]
-
     steps:
-      - name: Deploy
-        uses: appleboy/ssh-action@master
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Create .env for client
+        run: |
+          pwd
+          ls
+          ls ./back-end
+          cd front-end
+          touch .env.production
+          echo REACT_APP_SOCKET_HOST=${{ secrets.REACT_APP_SOCKET_HOST }}\ >> .env.production
+          echo REACT_APP_PEER_HOST=${{ secrets.REACT_APP_PEER_HOST }}\ >> .env.production
+          echo NODE_ENV=${{ secrets.NODE_ENV }}\ >> .env.production
+
+      - name: Create .env for server
+        run: |
+          cd ../back-end
+          touch .env
+          echo COOKIE_SECRET=${{ secrets.COOKIE_SECRET }}\ >> .env
+          echo TYPEORM_HOST=${{ secrets.TYPEORM_HOST }}\ >> .env
+          echo TYPEORM_PORT=${{ secrets.TYPEORM_PORT }}\ >> .env
+          echo TYPEORM_USERNAME=${{ secrets.TYPEORM_USERNAME }}\ >> .env
+          echo TYPEORM_PASSWORD=${{ secrets.TYPEORM_PASSWORD }}\ >> .env
+          echo TYPEORM_DATABASE=${{ secrets.TYPEORM_DATABASE }}\ >> .env
+          echo EXPRESS_PORT=${{ secrets.EXPRESS_PORT }}\ >> .env
+          echo SOCKET_PORT=${{ secrets.SOCKET_PORT }}\ >> .env
+          echo PEER_PORT=${{ secrets.PEER_PORT }}\ >> .env
+
+      - name: Make directory
+        run: |
+          cd ../
+          mkdir ../deploy
+
+      - name: Copy appspec
+        run: cp appspec.yml ../deploy
+
+      - name: Copy script
+        run: cp scripts/*.sh ../deploy
+
+      - name: Copy project
+        run: cp -r ../WEB17-LiarKing ../deploy
+
+      - name: Make zip file
+        run: zip -r ../liarking.zip ../deploy
+
+      - name: S3 authentication configure
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: ${{ secrets.EC2_SSH_PORT }}
-          script: |
-            echo "connected"
-            whoami
-            cd liarking
-            bash deploy.sh
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Upload to S3
+        run: aws s3 cp --region ap-northeast-2 --acl private ../liarking.zip s3://liarking
+
+      - name: Deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
+        run: |
+          aws deploy create-deployment \
+          --application-name liarking \
+          --deployment-group-name liarking-group \
+          --file-exists-behavior OVERWRITE \
+          --s3-location bucket=liarking,bundleType=zip,key=liarking.zip \
+          --region ap-northeast-2
