@@ -19,7 +19,11 @@ jobs:
       - name: Create .env for client
         working-directory: ${{ env.front }}
         run: |
-          cd ../../
+          pwd
+          cd ../
+          pwd
+          ls
+          cd ../
           pwd
           ls
           touch .env.production
