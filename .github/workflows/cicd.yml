@@ -19,21 +19,14 @@ jobs:
       - name: Create .env for client
         working-directory: ${{ env.front }}
         run: |
-          pwd
-          cd ../
-          pwd
-          ls
-          cd ../
-          pwd
-          ls
           touch .env.production
           echo REACT_APP_SOCKET_HOST=${{ secrets.REACT_APP_SOCKET_HOST }}\ >> .env.production
           echo REACT_APP_PEER_HOST=${{ secrets.REACT_APP_PEER_HOST }}\ >> .env.production
           echo NODE_ENV=${{ secrets.NODE_ENV }}\ >> .env.production
 
       - name: Create .env for server
+        working-directory: ${{ env.front }}
         run: |
-          cd ../back-end
           touch .env
           echo COOKIE_SECRET=${{ secrets.COOKIE_SECRET }}\ >> .env
           echo TYPEORM_HOST=${{ secrets.TYPEORM_HOST }}\ >> .env
@@ -47,7 +40,6 @@ jobs:
 
       - name: Make directory
         run: |
-          cd ../
           mkdir ../deploy
 
       - name: Copy appspec
@@ -57,7 +49,8 @@ jobs:
         run: cp scripts/*.sh ../deploy
 
       - name: Copy project
-        run: cp -r ../WEB17-LiarKing ../deploy
+        run: |
+          cp -r ../WEB17-LiarKing ../deploy
 
       - name: Make zip file
         run: zip -r ../liarking.zip ../deploy
