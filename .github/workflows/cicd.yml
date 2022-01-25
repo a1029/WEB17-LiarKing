@@ -17,11 +17,11 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Create .env for client
+        working-directory: ${{ env.front }}
         run: |
+          cd ../
           pwd
           ls
-          ls ./back-end
-          cd front-end
           touch .env.production
           echo REACT_APP_SOCKET_HOST=${{ secrets.REACT_APP_SOCKET_HOST }}\ >> .env.production
           echo REACT_APP_PEER_HOST=${{ secrets.REACT_APP_PEER_HOST }}\ >> .env.production
