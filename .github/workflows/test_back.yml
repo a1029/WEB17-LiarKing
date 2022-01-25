@@ -2,7 +2,7 @@ name: LiarKing-Back
 
 on:
   pull_request:
-    branches: [release]
+    branches: [dev]
 
 env:
   back_repo: ./back-end

@@ -5,8 +5,8 @@ on:
     branches: [release]
 
 env:
-  back: ./back-end
-  front: ./front-end
+  server_repo: ./back-end
+  client_repo: ./front-end
 
 jobs:
   CICD:
@@ -16,8 +16,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Install node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: 'npm'
+
       - name: Create .env for client
-        working-directory: ${{ env.front }}
+        working-directory: ${{ env.client_repo }}
         run: |
           touch .env.production
           echo REACT_APP_SOCKET_HOST=${{ secrets.REACT_APP_SOCKET_HOST }}\ >> .env.production
@@ -25,7 +31,7 @@ jobs:
           echo NODE_ENV=${{ secrets.NODE_ENV }}\ >> .env.production
 
       - name: Create .env for server
-        working-directory: ${{ env.front }}
+        working-directory: ${{ env.server_repo }}
         run: |
           touch .env
           echo COOKIE_SECRET=${{ secrets.COOKIE_SECRET }}\ >> .env
@@ -39,8 +45,7 @@ jobs:
           echo PEER_PORT=${{ secrets.PEER_PORT }}\ >> .env
 
       - name: Make directory
-        run: |
-          mkdir ../deploy
+        run: mkdir ../deploy
 
       - name: Copy appspec
         run: cp appspec.yml ../deploy
@@ -49,8 +54,18 @@ jobs:
         run: cp scripts/*.sh ../deploy
 
       - name: Copy project
-        run: |
-          cp -r ../WEB17-LiarKing ../deploy
+        run: cp -r ../WEB17-LiarKing ../deploy
+
+      - name: Install dependencies
+        working-directory: ${{ env.client_repo }}
+        run: npm i
+
+      - name: Build react
+        working-directory: ${{ env.client_repo }}
+        run: CI= npm run build
+
+      - name: Copy react build
+        run: cp -r front-end/build ../deploy
 
       - name: Make zip file
         run: zip -r ../liarking.zip ../deploy
@@ -71,8 +86,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
         run: |
           aws deploy create-deployment \
-          --application-name liarking \
-          --deployment-group-name liarking-group \
+          --application-name liarking-codedeploy \
+          --deployment-group-name liarking-codedeploy-group \
           --file-exists-behavior OVERWRITE \
           --s3-location bucket=liarking,bundleType=zip,key=liarking.zip \
           --region ap-northeast-2

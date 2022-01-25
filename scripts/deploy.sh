@@ -6,27 +6,19 @@ FRONT_REPO=/home/ec2-user/WEB17-LiarKing/front-end
 
 cd $REPO
 
-echo "> Git pull"
-
-git pull
-
-echo "> Build react"
-
-cd $FRONT_REPO && npm install
-
-npm run build
-
 echo "> Copy react build"
 
-sudo cp -r build/* /usr/share/nginx/build/
+sudo cp -r /home/ec2-user/build /usr/share/nginx/build
+
+echo "> Install server dependency"
+
+cd $BACK_REPO && npm install
 
 echo "> Stop server"
 
 killall node
 
 echo "> Server start"
-
-cd $BACK_REPO && npm install
 
 nohup npm start 1>../../server_log.txt 2>&1 &
 
