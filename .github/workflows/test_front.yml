@@ -2,7 +2,7 @@ name: LiarKing-Front
 
 on:
   pull_request:
-    branches: [release]
+    branches: [dev]
 
 env:
   front_repo: ./front-end
